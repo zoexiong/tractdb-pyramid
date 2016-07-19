@@ -1,0 +1,39 @@
+{# This file compiles to .travis.yml -#}
+# This file compiled from .travis.yml.in
+
+sudo: required
+
+language: python
+
+services:
+  - docker
+
+python:
+  - "{{ local.python.version }}"
+
+env:
+  - BASE_DOCKER_ON_TRAVIS=true
+
+install:
+  # Install Python dependencies
+  - python -m pip install --upgrade pip=={{ local.python.pip_version }}
+  - python -m pip install -r requirements3.txt
+
+  # Install Docker
+  - apt-cache madison docker-engine
+
+  - sudo apt-get -o Dpkg::Options::="--force-confnew" install -y docker-engine={{ docker.travis.version }}
+
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/{{ docker.travis.compose_version }}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+  - docker version
+  - docker-compose version
+
+script:
+  - invoke docker_machine_start &&
+    sleep {{ docker.travis.compose_up_delay }}
+  - nosetests
+{# This comment gives us a newline at the end of the generated file #}

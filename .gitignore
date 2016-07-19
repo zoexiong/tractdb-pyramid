@@ -1,0 +1,16 @@
+# IDE settings
+.idea
+*.iml
+
+# Our Python environment
+env34
+env35
+
+# Compiled Python
+*.pyc
+
+# Any secrets, such as passwords or keys
+/secrets
+
+# Localized compose files
+tests/test-compose.localized.yml
