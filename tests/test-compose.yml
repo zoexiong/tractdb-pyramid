@@ -1,5 +1,7 @@
-tests_main:
-  container_name: tests_main
-  image: "nginx"
+test_couchdb:
+  container_name: test_couchdb
+  build: "https://github.com/fogies/docker-couchdb.git"
   ports:
-    - "80:80"
+    - "5984:5984"
+  volumes:
+    - "{{ CWD }}/tests/test-secrets/couchdb_secrets.yml:/docker-couchdb-secrets/secrets.yml"

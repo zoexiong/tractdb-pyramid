@@ -36,5 +36,7 @@ script:
   - |
     invoke docker_machine_start
     sleep {{ docker.travis.compose_up_delay }}
+    invoke serve_test &
+    sleep {{ docker.travis.compose_up_delay }}
   - nosetests
 {# This comment gives us a newline at the end of the generated file #}

@@ -5,6 +5,8 @@ invoke=={{ local.python.invoke_version }}
 jinja2
 nose
 pip-tools
+pyramid
 pyyaml
 requests
+waitress
 {# This comment gives us a newline at the end of the generated file #}

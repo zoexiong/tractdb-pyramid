@@ -35,4 +35,6 @@ script:
   - |
     invoke docker_machine_start
     sleep 15
+    invoke serve_test &
+    sleep 15
   - nosetests

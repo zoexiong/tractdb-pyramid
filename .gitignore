@@ -7,10 +7,12 @@ env34
 env35
 
 # Compiled Python
+*.egg-info
 *.pyc
 
 # Any secrets, such as passwords or keys
 /secrets
 
-# Localized compose files
+# Localized test files
+config_development.localized.ini
 tests/test-compose.localized.yml

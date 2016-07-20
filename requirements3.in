@@ -4,5 +4,7 @@ invoke==0.12.2
 jinja2
 nose
 pip-tools
+pyramid
 pyyaml
 requests
+waitress
