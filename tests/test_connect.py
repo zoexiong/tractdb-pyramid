@@ -6,7 +6,7 @@ import unittest
 def setup():
     docker_base.compose_ensure_up(
         'tests/test-compose.yml',
-        'tests_main'
+        'test_couchdb'
     )
 
 
@@ -15,9 +15,9 @@ def teardown():
 
 
 class TestConnect(unittest.TestCase):
-    def test_connect(self):
+    def test_connect_couchdb(self):
         response = requests.get(
-            'http://{}'.format(
+            'http://{}:5984'.format(
                 docker_base.ip()
             )
         )
@@ -29,3 +29,14 @@ class TestConnect(unittest.TestCase):
             200
         )
 
+    def test_connect_pyramid_tractdb(self):
+        response = requests.get(
+            'http://localhost:8080'
+        )
+
+        print(response.content)
+
+        self.assertEqual(
+            response.status_code,
+            200
+        )
