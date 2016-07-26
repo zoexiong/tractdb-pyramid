@@ -41,6 +41,15 @@ def compile_config():
 
 
 @invoke.task()
+def compile_requirements():
+    # Compile the requirements file
+    invoke.run(
+        'pip-compile --upgrade --output-file requirements3.txt requirements3.in',
+        encoding=sys.stdout.encoding
+    )
+
+
+@invoke.task()
 def docker_machine_console():
     docker_base.machine_console()
 
@@ -69,4 +78,7 @@ def docker_machine_stop():
 
 @invoke.task
 def update_base():
-    invoke.run('git pull https://github.com/fogies/testwithdocker-base.git master', encoding=sys.stdout.encoding)
+    invoke.run(
+        'git pull https://github.com/fogies/testwithdocker-base.git master',
+        encoding=sys.stdout.encoding
+    )
