@@ -32,6 +32,7 @@ install:
   - docker-compose version
 
 script:
-  - invoke docker_machine_start &&
+  - |
+    invoke docker_machine_start
     sleep 15
   - nosetests
