@@ -7,4 +7,5 @@ pip-tools
 pyramid
 pyyaml
 requests
+tractdb
 waitress

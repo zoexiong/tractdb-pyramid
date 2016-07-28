@@ -14,5 +14,6 @@ env35
 /secrets
 
 # Localized test files
-config_development.localized.ini
+pyramid_config.combined.ini
+pyramid_config.combined.localized.ini
 tests/test-compose.localized.yml
