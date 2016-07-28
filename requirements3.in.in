@@ -8,5 +8,6 @@ pip-tools
 pyramid
 pyyaml
 requests
+tractdb
 waitress
 {# This comment gives us a newline at the end of the generated file #}

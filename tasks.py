@@ -1,8 +1,9 @@
-import tests.docker_base as docker_base
+import configparser
 import invoke
 import jinja2
 import re
 import sys
+import tests.docker_base as docker_base
 import yaml
 
 
@@ -117,14 +118,24 @@ def docker_machine_stop():
     docker_base.compose_run('tests/test-compose.yml', 'stop')
 
 
-def _config_localize(file_compose, file_compose_localized):
+def _config_combine(list_file_config, file_config_combined):
+    # Combine the multiple config files
+    config_combined = configparser.ConfigParser()
+    for file_config_current in list_file_config:
+        config_combined.read(file_config_current)
+
+    with open(file_config_combined, 'w') as f:
+        config_combined.write(f)
+
+
+def _config_localize(file_config_combined, file_config_localized):
     # Compile our configuration into a localized version
     jinja2_environment = jinja2.Environment(
         loader=jinja2.FileSystemLoader(searchpath='.'),
         undefined=jinja2.StrictUndefined
     )
-    template = jinja2_environment.get_template(file_compose)
-    with open(file_compose_localized, 'w') as f:
+    template = jinja2_environment.get_template(file_config_combined)
+    with open(file_config_localized, 'w') as f:
         f.write(template.render({
             'DOCKER_IP': docker_base.ip()
         }))
@@ -132,14 +143,44 @@ def _config_localize(file_compose, file_compose_localized):
 
 @invoke.task(pre=[update_dependencies, docker_machine_start])
 def serve_test():
-    _config_localize('config_development.ini', 'config_development.localized.ini')
+    _config_combine(
+        [
+            'pyramid_config.ini',
+            'pyramid_config.test.ini'
+        ],
+        'pyramid_config.combined.ini'
+    )
+    _config_localize(
+        'pyramid_config.combined.ini',
+        'pyramid_config.combined.localized.ini'
+    )
 
     invoke.run(
         'python setup.py develop',
         encoding=sys.stdout.encoding
     )
     invoke.run(
-        'pserve config_development.localized.ini',
+        'pserve pyramid_config.combined.localized.ini',
+        encoding=sys.stdout.encoding
+    )
+
+
+@invoke.task(pre=[update_dependencies])
+def serve_production():
+    _config_combine(
+        [
+            'pyramid_config.ini',
+            'pyramid_config.production.ini'
+        ],
+        'pyramid_config.combined.ini'
+    )
+
+    invoke.run(
+        'python setup.py develop',
+        encoding=sys.stdout.encoding
+    )
+    invoke.run(
+        'pserve pyramid_config.combined.ini',
         encoding=sys.stdout.encoding
     )
 
