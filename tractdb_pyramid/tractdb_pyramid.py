@@ -13,11 +13,9 @@ def main(global_config, **settings):
     # Configure our pyramid app
     config = pyramid.config.Configurator(settings=settings)
     config.include('cornice')
-
-    config.add_route('couch', '/couch{request:.*}')
-
     config.scan('tractdb_pyramid.views')
 
+    # Make the app
     app = config.make_wsgi_app()
 
     return app
