@@ -3,41 +3,40 @@ import unittest
 
 
 class TestAccountView(unittest.TestCase):
-    ACCOUNTS_URL = 'http://localhost:8080/accounts'
+    ACCOUNT_URL = 'http://localhost:8080/account'
+    ACCOUNT_COLLECTION_URL = 'http://localhost:8080/accounts'
 
     TEST_ACCOUNT = 'tractdb_pyramid_testaccountview_test_account'
     TEST_ACCOUNT_PASSWORD = 'tractdb_pyramid_testaccountview_test_account_password'
 
     def test_create_and_delete_account(self):
+        # Get the current accounts
         r = requests.get(
-            TestAccountView.ACCOUNTS_URL,
+            TestAccountView.ACCOUNT_COLLECTION_URL,
         )
-        print(r.content)
+        self.assertEqual(r.status_code, 200)
 
         # Ensure it does not already exist (this could fail silently if the account doesn't exist)
         r = requests.delete(
             '{}/{}'.format(
-                TestAccountView.ACCOUNTS_URL,
+                TestAccountView.ACCOUNT_URL,
                 TestAccountView.TEST_ACCOUNT
             )
         )
 
         # Create the account
         r = requests.post(
-            TestAccountView.ACCOUNTS_URL,
+            TestAccountView.ACCOUNT_COLLECTION_URL,
             json={
                 'account': TestAccountView.TEST_ACCOUNT,
                 'password': TestAccountView.TEST_ACCOUNT_PASSWORD
             }
         )
-        print(r.request.url)
-        print(r.request.body)
-        print(r.content)
         self.assertEqual(r.status_code, 201)
 
         # Test the creating it again fails
         r = requests.post(
-            TestAccountView.ACCOUNTS_URL,
+            TestAccountView.ACCOUNT_COLLECTION_URL,
             json={
                 'account': TestAccountView.TEST_ACCOUNT,
                 'password': TestAccountView.TEST_ACCOUNT_PASSWORD
@@ -47,16 +46,15 @@ class TestAccountView(unittest.TestCase):
 
         # Test the account exists
         r = requests.get(
-            TestAccountView.ACCOUNTS_URL,
+            TestAccountView.ACCOUNT_COLLECTION_URL,
         )
         self.assertEqual(r.status_code, 200)
-        self.assertIsInstance(r.json(), list)
-        self.assertIn(TestAccountView.TEST_ACCOUNT, r.json())
+        self.assertIn(TestAccountView.TEST_ACCOUNT, r.json()['accounts'])
 
         # Delete the account
         r = requests.delete(
             '{}/{}'.format(
-                TestAccountView.ACCOUNTS_URL,
+                TestAccountView.ACCOUNT_URL,
                 TestAccountView.TEST_ACCOUNT
             )
         )
@@ -65,7 +63,7 @@ class TestAccountView(unittest.TestCase):
         # Test that deleting the account again fails
         r = requests.delete(
             '{}/{}'.format(
-                TestAccountView.ACCOUNTS_URL,
+                TestAccountView.ACCOUNT_URL,
                 TestAccountView.TEST_ACCOUNT
             )
         )
@@ -73,9 +71,8 @@ class TestAccountView(unittest.TestCase):
 
         # Test the account is gone
         r = requests.get(
-            TestAccountView.ACCOUNTS_URL,
+            TestAccountView.ACCOUNT_COLLECTION_URL,
         )
         self.assertEqual(r.status_code, 200)
-        self.assertIsInstance(r.json(), list)
-        self.assertNotIn(TestAccountView.TEST_ACCOUNT, r.json())
+        self.assertNotIn(TestAccountView.TEST_ACCOUNT, r.json()['accounts'])
 

@@ -1,86 +1,91 @@
-import pyramid.config
-import pyramid.response
-import pyramid.view
+import cornice
 import tractdb.admin
 
+service_account = cornice.Service(
+    name='account',
+    path='/account/{id_account}',
+    description='TractDB Account',
+    cors_origins=('*',)
+)
 
-@pyramid.view.view_defaults(route_name='account', renderer='json')
-class AccountView:
-    def __init__(self, request):
-        self.request = request
+service_account_collection = cornice.Service(
+    name='accounts',
+    path='/accounts',
+    description='TractDB Account Collection',
+    cors_origins=('*',)
+)
 
-    def _get_admin(self):
-        # Create our admin object
-        admin = tractdb.admin.TractDBAdmin(
-            server_url=self.request.registry.settings.tractdb_couchdb,
-            server_admin=self.request.registry.settings.tractdb_couchdb_secrets['admin']['user'],
-            server_password=self.request.registry.settings.tractdb_couchdb_secrets['admin']['password']
-        )
 
-        return admin
+def _get_admin(request):
+    # Create our admin object
+    admin = tractdb.admin.TractDBAdmin(
+        server_url=request.registry.settings.tractdb_couchdb,
+        server_admin=request.registry.settings.tractdb_couchdb_secrets['admin']['user'],
+        server_password=request.registry.settings.tractdb_couchdb_secrets['admin']['password']
+    )
 
-    @pyramid.view.view_config(route_name='accounts', request_method='GET')
-    def get_all(self):
-        """ Get a list of accounts.
-        """
-        # Get the accounts
-        admin = self._get_admin()
-        list_accounts = admin.list_accounts()
+    return admin
 
-        # Return appropriately
-        self.request.response.status_int = 200
-        return list_accounts
 
-    # @pyramid.view.view_config(request_method='GET')
-    # def get(self):
-    #     pass
+@service_account.delete()
+def delete(request):
+    """ Delete an account.
+    """
 
-    @pyramid.view.view_config(route_name='accounts', request_method='POST')
-    def post(self):
-        """ Create an account.
-        """
+    # Our account parameter
+    account = request.matchdict['id_account']
 
-        # Our JSON parameter, this could be validated
-        json = self.request.json_body
-        account = json['account']
-        account_password = json['password']
+    # Our admin object
+    admin = _get_admin(request)
 
-        # Our admin object
-        admin = self._get_admin()
+    # Check if the account exists
+    if account not in admin.list_accounts():
+        request.response.status_int = 404
+        return
 
-        # Check if the account exists
-        if account in admin.list_accounts():
-            self.request.response.status_int = 409
-            return
+    # Delete the account
+    admin.delete_account(account)
 
-        # Create the account
-        admin.create_account(account, account_password)
+    # Return appropriately
+    request.response.status_int = 200
 
-        # Return appropriately
-        self.request.response.status_int = 201
 
-    # @pyramid.view.view_config(request_method='PUT')
-    # def put(self):
-    #     pass
+@service_account_collection.get()
+def collection_get(request):
+    """ Get a list of accounts.
+    """
+    # Get the accounts
+    admin = _get_admin(request)
+    list_accounts = admin.list_accounts()
 
-    @pyramid.view.view_config(request_method='DELETE')
-    def delete(self):
-        """ Delete an account.
-        """
+    # Return appropriately
+    request.response.status_int = 200
+    return {
+        'accounts':
+            list_accounts
+    }
 
-        # Our account parameter
-        account = self.request.matchdict['account']
 
-        # Our admin object
-        admin = self._get_admin()
+@service_account_collection.post()
+def collection_post(request):
+    """ Create an account.
+    """
 
-        # Check if the account exists
-        if account not in admin.list_accounts():
-            self.request.response.status_int = 404
-            return
+    # Our JSON parameter, this could be validated
+    json = request.json_body
+    account = json['account']
+    account_password = json['password']
 
-        # Delete the account
-        admin.delete_account(account)
+    # Our admin object
+    admin = _get_admin(request)
 
-        # Return appropriately
-        self.request.response.status_int = 200
+    # Check if the account exists
+    if account in admin.list_accounts():
+        request.response.status_int = 409
+        return
+
+    # Create the account
+    admin.create_account(account, account_password)
+
+    # Return appropriately
+    request.response.status_int = 201

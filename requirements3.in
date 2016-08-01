@@ -1,5 +1,6 @@
 # This file compiled from requirements3.in.in
 
+cornice
 invoke==0.12.2
 jinja2
 nose
