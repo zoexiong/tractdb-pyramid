@@ -1,3 +1,4 @@
+import json
 import tests.docker_base as docker_base
 import requests
 import unittest
@@ -22,7 +23,7 @@ class TestConnect(unittest.TestCase):
             )
         )
 
-        print(response.content)
+        print(json.dumps(response.json(), indent=4, sort_keys=True))
 
         self.assertEqual(
             response.status_code,
@@ -34,7 +35,7 @@ class TestConnect(unittest.TestCase):
             'http://localhost:8080'
         )
 
-        print(response.content)
+        print(json.dumps(response.json(), indent=4, sort_keys=True))
 
         self.assertEqual(
             response.status_code,
