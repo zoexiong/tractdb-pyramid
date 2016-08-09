@@ -1,3 +1,5 @@
+import pyramid.authentication
+import pyramid.authorization
 import pyramid.config
 import pyramid.response
 import pyramid.view
@@ -12,6 +14,17 @@ def main(global_config, **settings):
 
     # Configure our pyramid app
     config = pyramid.config.Configurator(settings=settings)
+
+    # Authentication and Authorization
+    policy_authentication = pyramid.authentication.AuthTktAuthenticationPolicy(
+        'temporary_secret_do_not_use_in_production', hashalg='sha512'
+    )
+    policy_authorization = pyramid.authorization.ACLAuthorizationPolicy()
+
+    config.set_authentication_policy(policy_authentication)
+    config.set_authorization_policy(policy_authorization)
+
+    # Application views
     config.include('cornice')
     config.scan('tractdb_pyramid.views')
 
