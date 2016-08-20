@@ -1,6 +1,6 @@
 import tests.docker_base as docker_base
 import requests
-import tractdb.admin
+import tractdb.server.accounts
 import unittest
 import yaml
 
@@ -18,12 +18,12 @@ def setup():
         couchdb_secrets = yaml.safe_load(f)
 
     # Create our admin object
-    admin = tractdb.admin.TractDBAdmin(
-        server_url='http://{}:5984'.format(
+    admin = tractdb.server.accounts.AccountsAdmin(
+        couchdb_url='http://{}:5984'.format(
             docker_base.ip()
         ),
-        server_admin=couchdb_secrets['admin']['user'],
-        server_password=couchdb_secrets['admin']['password']
+        couchdb_admin=couchdb_secrets['admin']['user'],
+        couchdb_admin_password=couchdb_secrets['admin']['password']
     )
 
     # Create the account we expect

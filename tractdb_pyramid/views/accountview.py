@@ -1,5 +1,5 @@
 import cornice
-import tractdb.admin
+import tractdb.server.accounts
 
 service_account = cornice.Service(
     name='account',
@@ -18,10 +18,10 @@ service_account_collection = cornice.Service(
 
 def _get_admin(request):
     # Create our admin object
-    admin = tractdb.admin.TractDBAdmin(
-        server_url=request.registry.settings.tractdb_couchdb,
-        server_admin=request.registry.settings.tractdb_couchdb_secrets['admin']['user'],
-        server_password=request.registry.settings.tractdb_couchdb_secrets['admin']['password']
+    admin = tractdb.server.accounts.AccountsAdmin(
+        couchdb_url=request.registry.settings.tractdb_couchdb,
+        couchdb_admin=request.registry.settings.tractdb_couchdb_secrets['admin']['user'],
+        couchdb_admin_password=request.registry.settings.tractdb_couchdb_secrets['admin']['password']
     )
 
     return admin
