@@ -1,4 +1,3 @@
-import jinja2
 import os
 import subprocess
 import sys
@@ -39,19 +38,6 @@ def _check_result(command, result):
         )
 
 
-def _compose_localize(file_compose, file_compose_localized):
-    # Compile our test compose configuration into a localized version
-    jinja2_environment = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(searchpath='.'),
-        undefined=jinja2.StrictUndefined
-    )
-    template = jinja2_environment.get_template(file_compose)
-    with open(file_compose_localized, 'w') as f:
-        f.write(template.render({
-            'CWD': os.path.normpath(os.getcwd()).replace('\\', '/')
-        }))
-
-
 def compose_ensure_up(file_compose, service):
     machine_ensure()
     compose_run(file_compose, 'build {}'.format(service))
@@ -63,39 +49,33 @@ def compose_run(file_compose, compose_command, check_result=True):
     with open('_compile-config.yml') as f:
         compile_config_yaml = yaml.safe_load(f)
 
-    # Localize our compose file
-    file_compose_localized = '{}{}{}'.format(
-        os.path.splitext(file_compose)[0],
-        '.localized',
-        os.path.splitext(file_compose)[1]
-    )
-    _compose_localize(file_compose, file_compose_localized)
-
     # Assemble our command
     if 'BASE_DOCKER_ON_TRAVIS' in os.environ:
         command = 'docker-compose -f "{}" {}'.format(
-            file_compose_localized,
+            file_compose,
             compose_command
         )
     else:
         command = '"{}" "{}" docker-compose -f "{}" {}'.format(
             compile_config_yaml['config']['local']['docker']['cmd_bash'],
             os.path.normpath(os.path.join(os.getcwd(), 'base/docker-machine/machine_bash.sh')).replace('\\', '/'),
-            os.path.normpath(os.path.join(os.getcwd(), file_compose_localized)).replace('\\', '/'),
+            os.path.normpath(os.path.join(os.getcwd(), file_compose)).replace('\\', '/'),
             compose_command
         )
 
     # Call the command
-    result = subprocess.run(
+    process = subprocess.Popen(
         command,
         shell=True,
         stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE
+        stderr=subprocess.PIPE,
+        universal_newlines=True
     )
-    if check_result:
-        _check_result(command, result)
+    for line in process.stdout:
+        flag_print = line.startswith('Step ')
 
-    return result
+        if flag_print:
+            print(line, end='', flush=True)
 
 
 def docker_run(docker_command, check_result=True):

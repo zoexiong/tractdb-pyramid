@@ -18,10 +18,22 @@ class TestConnect(unittest.TestCase):
                 docker_base.ip()
             )
         )
-        self.assertEqual(response.status_code, 200)
+
+        print(response.content)
+
+        self.assertEqual(
+            response.status_code,
+            200
+        )
 
     def test_connect_pyramid_tractdb(self):
         response = requests.get(
             'http://localhost:8080'
         )
-        self.assertEqual(response.status_code, 200)
+
+        print(response.content)
+
+        self.assertEqual(
+            response.status_code,
+            200
+        )
