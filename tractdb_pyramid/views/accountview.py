@@ -5,14 +5,16 @@ service_account = cornice.Service(
     name='account',
     path='/account/{id_account}',
     description='TractDB Account',
-    cors_origins=('*',)
+    cors_origins=('*',),
+    cors_credentials=True
 )
 
 service_account_collection = cornice.Service(
     name='accounts',
     path='/accounts',
     description='TractDB Account Collection',
-    cors_origins=('*',)
+    cors_origins=('*',),
+    cors_credentials=True
 )
 
 
