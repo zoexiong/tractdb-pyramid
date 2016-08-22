@@ -5,7 +5,8 @@ service = cornice.Service(
     name='status',
     path='/',
     description='TractDB Status',
-    cors_origins=('*',)
+    cors_origins=('*',),
+    cors_credentials=True
 )
 
 

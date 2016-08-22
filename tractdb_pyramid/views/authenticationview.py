@@ -19,6 +19,7 @@ service_authenticated = cornice.Service(
     path='/authenticated',
     description='TractDB Authenticated',
     cors_origins=('*',),
+    cors_credentials=True,
     acl=acl_authenticated
 )
 
@@ -41,7 +42,8 @@ service_login = cornice.Service(
     name='login',
     path='/login',
     description='TractDB Login',
-    cors_origins=('*',)
+    cors_origins=('*',),
+    cors_credentials=True
 )
 
 
@@ -92,6 +94,7 @@ service_logout = cornice.Service(
     path='/logout',
     description='TractDB Logout',
     cors_origins=('*',),
+    cors_credentials=True,
     acl=acl_logout
 )
 
