@@ -93,7 +93,7 @@ def collection_post(request):
     admin = _get_admin(request)
 
     # Check if the account exists
-    if account in admin.list_accounts():
+    if account not in admin.list_accounts():
         request.response.status_int = 409
         return
 
