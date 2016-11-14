@@ -108,7 +108,7 @@ class TestAccountView(unittest.TestCase):
         r = requests.get(
             ROLE_COLLECTION_URL,
         )
-        self.assertEqual(r.status_code, 404)
+        self.assertEqual(r.status_code, 200)
 
         # Add role
         r = requests.post(
