@@ -3,7 +3,7 @@ import tractdb.server.accounts
 
 service_role = cornice.Service(
     name='role',
-    path='/account/{id_account}/roles/{id_role}',
+    path='/account/{id_account}/role/{id_role}',
     description='TractDB Account Role',
     cors_origins=('*',),
     cors_credentials=True
@@ -31,12 +31,11 @@ def _get_admin(request):
 
 @service_role.delete()
 def delete(request):
-    """ Delete an role.
+    """ Delete a role.
     """
 
-    # Our account parameter
+    # Our account and role parameters
     account = request.matchdict['id_account']
-
     role = request.matchdict['id_role']
 
     # Our admin object
@@ -53,7 +52,7 @@ def delete(request):
         return
 
     # Delete the role
-    admin.delete_role(account,role)
+    admin.delete_role(account, role)
 
     # Return appropriately
     request.response.status_int = 200
@@ -67,8 +66,15 @@ def collection_get(request):
     # Our account parameter
     account = request.matchdict['id_account']
 
-    # Get the roles
+    # Our admin object
     admin = _get_admin(request)
+
+    # Check if the account exists
+    if account not in admin.list_accounts():
+        request.response.status_int = 404
+        return
+
+    # Get the roles
     list_roles = admin.list_roles(account)
 
     # Return appropriately
@@ -94,7 +100,7 @@ def collection_post(request):
 
     # Check if the account exists
     if account not in admin.list_accounts():
-        request.response.status_int = 409
+        request.response.status_int = 404
         return
 
     # Check if the role exists
