@@ -43,12 +43,12 @@ def delete(request):
 
     # Check if the account exists
     if account not in admin.list_accounts():
-        request.response.status_int = 404
+        request.response.status_int = 402
         return
 
     # Check if the role exists
     if role not in admin.list_roles(account):
-        request.response.status_int = 404
+        request.response.status_int = 403
         return
 
     # Delete the role
