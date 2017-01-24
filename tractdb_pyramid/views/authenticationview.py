@@ -28,7 +28,9 @@ service_authenticated = cornice.Service(
 def authenticated_get(request):
     return {
         'account':
-            request.authenticated_userid
+            request.authenticated_userid,
+        'session':
+            request.session
     }
 
 
