@@ -60,6 +60,11 @@ class TestAuthenticationViews(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
+        self.assertEquals(
+            response.json()['account'],
+            TEST_ACCOUNT
+        )
+
     def test_login_fail(self):
         session = requests.Session()
 
