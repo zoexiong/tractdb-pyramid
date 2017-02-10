@@ -113,6 +113,7 @@ def reset_password_post(request):
     # Our admin object
     admin = _get_admin(request)
 
+
     # Check if the account does not exist
     if account not in admin.list_accounts():
         request.response.status_int = 409
