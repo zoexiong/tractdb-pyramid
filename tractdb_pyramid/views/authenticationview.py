@@ -79,18 +79,9 @@ def login_post(request):
 
         # set expire date and add it to cookie
         cookie = request.response.headers['Set-Cookie']
-        session = couchdb_response.headers['Set-Cookie']
         ticket = cookie[9:180]
         request.response.set_cookie(name='auth_tkt', value=ticket, max_age=86400, path='/', domain=None, secure=False,
                                     httponly=False, comment=None, expires=86400, overwrite=False)
-
-        # return the auth_tkt and couch session so we can check that use browser
-        return {
-            'cookie_pyramid':
-                ticket,
-            'session_couch':
-                session
-        }
 
     # Return the sames status code
     request.response.status_int = couchdb_response.status_code
