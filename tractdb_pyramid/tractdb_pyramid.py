@@ -21,7 +21,7 @@ def main(global_config, **settings):
     config = pyramid.config.Configurator(settings=settings)
 
     # Authentication and Authorization
-    pyramid_secret = settings['tractdb_pyramid_secrets']['pyramid_secret']
+    pyramid_secret = settings['tractdb_pyramid_secrets']['authtktauthenticationpolicy_secret']
     policy_authentication = pyramid.authentication.AuthTktAuthenticationPolicy(
         pyramid_secret, hashalg='sha512'
     )
