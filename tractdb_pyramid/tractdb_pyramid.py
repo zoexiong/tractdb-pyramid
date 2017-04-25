@@ -12,12 +12,18 @@ def main(global_config, **settings):
         config = yaml.safe_load(f)
     settings['tractdb_couchdb_secrets'] = config
 
+    # Parse our pyramid secrets
+    with open(settings['tractdb_pyramid_secrets']) as f:
+        config = yaml.safe_load(f)
+    settings['tractdb_pyramid_secrets'] = config
+
     # Configure our pyramid app
     config = pyramid.config.Configurator(settings=settings)
 
     pyramid_secret = settings['tractdb_pyramid_secrets']['pyramid_secret']
 
     # Authentication and Authorization
+    pyramid_secret = settings['tractdb_pyramid_secrets']['authtktauthenticationpolicy_secret']
     policy_authentication = pyramid.authentication.AuthTktAuthenticationPolicy(
         pyramid_secret, hashalg='sha512'
     )
